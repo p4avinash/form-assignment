@@ -253,11 +253,17 @@ const Form = () => {
                 <br />
                 <Controller
                   name='gender'
-                  rules={{ required: "Please select a gender" }}
+                  rules={{
+                    required: true,
+                    validate: {
+                      check: (value) =>
+                        value.label !== "" || "Please select a gender",
+                    },
+                  }}
                   render={({ field }) => (
                     <Select
                       variant={"filled"}
-                      placeholder='Select gender'
+                      placeholder='Select Gender'
                       styles={{ option }}
                       hideSelectedOptions={false}
                       closeMenuOnSelect={false}
