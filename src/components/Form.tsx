@@ -115,7 +115,7 @@ const Form = () => {
     const timeout = setTimeout(() => {
       setIsLoading(false)
       actions.UpdateState({ data: data })
-    }, 0)
+    }, 3000)
     return () => clearTimeout(timeout)
   }
 
@@ -291,15 +291,15 @@ const Form = () => {
                   id='dob'
                   {...register("dob", {
                     required: "Date of Birth is required",
-                    // min: {
-                    //   value: "1899-01-01",
-                    //   message: "Invalid Date",
-                    // },
-                    // max: {
-                    //   value: "2019-01-01",
-                    //   message:
-                    //     "User needs to be at least 5 years old to register",
-                    // },
+                    min: {
+                      value: "1899-01-01",
+                      message: "Invalid Date",
+                    },
+                    max: {
+                      value: "2019-01-01",
+                      message:
+                        "User needs to be at least 5 years old to register",
+                    },
                   })}
                 />
                 <Text color={"red"}>{errors.dob?.message}</Text>
