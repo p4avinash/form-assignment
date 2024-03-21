@@ -14,6 +14,8 @@ import UpdateState from "./UpdateState"
 import { useStateMachine } from "little-state-machine"
 
 const { Option } = components
+
+// function to implement check icon in custom select
 function IconOption(props: any) {
   const {
     data: { label, Icon },
@@ -63,6 +65,7 @@ type FormValues = {
   }[]
 }
 
+// overwriting bgcolor and text color for custom select
 const option = (provided: any, state: any) => ({
   ...provided,
 
@@ -100,16 +103,11 @@ const Form = () => {
   const { fields, append, remove } = useFieldArray({
     name: "techstack",
     control,
-    rules: {
-      required: "This is required",
-      // validate: (fieldArrayValues) => {
-      //   console.log(fieldArrayValues)
-      // },
-    },
   })
 
   const { actions, state } = useStateMachine({ UpdateState })
 
+  // function to handle loading state and dispatch form data to global state after timeout duration
   const handleIsLoading = (data: any) => {
     setIsLoading(true)
     const timeout = setTimeout(() => {
@@ -119,6 +117,7 @@ const Form = () => {
     return () => clearTimeout(timeout)
   }
 
+  // function to handle date format
   const handleDateFormat = (date: string) => {
     const monthName = [
       "Jan",
@@ -148,7 +147,6 @@ const Form = () => {
   }
 
   console.log(errors)
-  console.log(errors.techstack?.[0]?.name?.message)
 
   return (
     <form
@@ -201,7 +199,7 @@ const Form = () => {
                     },
                     pattern: {
                       value: /^[a-zA-Z]+$/,
-                      message: "First Name can't contain number",
+                      message: "First Name can't contain number or spaces",
                     },
                   })}
                   placeholder='first name'
@@ -233,7 +231,7 @@ const Form = () => {
                     },
                     pattern: {
                       value: /^[a-zA-Z]+$/,
-                      message: "Last Name can't contain number",
+                      message: "Last Name can't contain number and spaces",
                     },
                   })}
                   placeholder='last name'
@@ -388,30 +386,34 @@ const Form = () => {
               <Flex my={4} direction={"column"} gap={2}>
                 {fields.map((field, index) => {
                   return (
-                    <InputGroup key={field.id}>
-                      <Input
-                        placeholder='Enter tech stack'
-                        variant={"filled"}
-                        key={field.id}
-                        type='text'
-                        {...register(`techstack.${index}.name`, {
-                          required: "stack is required",
-                        })}
-                      />
-                      {index !== 0 && (
-                        <InputRightElement>
-                          <CloseIcon
-                            onClick={() => remove(index)}
-                            fontSize={"sm"}
-                            cursor={"pointer"}
-                          />
-                        </InputRightElement>
-                      )}
-                    </InputGroup>
+                    <Box key={field.id}>
+                      <InputGroup key={field.id}>
+                        <Input
+                          placeholder='Enter tech stack'
+                          variant={"filled"}
+                          key={field.id}
+                          type='text'
+                          {...register(`techstack.${index}.name`, {
+                            required: "Tech Stack is required",
+                          })}
+                        />
+                        {index !== 0 && (
+                          <InputRightElement>
+                            <CloseIcon
+                              onClick={() => remove(index)}
+                              fontSize={"sm"}
+                              cursor={"pointer"}
+                            />
+                          </InputRightElement>
+                        )}
+                      </InputGroup>
+                      <Text color={"red"}>
+                        {errors.techstack?.[index]?.name?.message}
+                      </Text>
+                    </Box>
                   )
                 })}
               </Flex>
-              {/* <Text color={"red"}>{errors}</Text> */}
             </Box>
           </Box>
           <Flex>
