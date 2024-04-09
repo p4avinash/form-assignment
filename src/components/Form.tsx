@@ -5,7 +5,7 @@ import {
   InputRightElement,
   InputLeftAddon,
 } from "@chakra-ui/react"
-import { useForm, useFieldArray, FormProvider } from "react-hook-form"
+import { useForm, useFieldArray } from "react-hook-form"
 import { Flex, Spacer, Box, Spinner, Button } from "@chakra-ui/react"
 import { useState } from "react"
 import { AddIcon, CloseIcon } from "@chakra-ui/icons"
@@ -14,6 +14,7 @@ import { useStateMachine } from "little-state-machine"
 import { handleDateFormat } from "../utility/utility"
 import { FormValues } from "../types/type"
 import CustomSelect from "./CustomSelect"
+import CustomInput from "./CustomInput"
 import { useRef } from "react"
 
 const Form = () => {
@@ -92,30 +93,7 @@ const Form = () => {
                   First Name
                 </Text>
                 <br />
-                <Input
-                  w={300}
-                  transition='all 0.2s'
-                  borderRadius={6}
-                  borderWidth='1px'
-                  _hover={{ bg: "gray.400" }}
-                  _expanded={{ bg: "blue.400" }}
-                  _focus={{ boxShadow: "outline" }}
-                  variant={"filled"}
-                  size='md'
-                  type='text'
-                  {...register("firstName", {
-                    required: "First Name is required",
-                    minLength: {
-                      value: 2,
-                      message: "First Name should at least be 2 characters",
-                    },
-                    pattern: {
-                      value: /^[a-zA-Z]+$/,
-                      message: "First Name can't contain number or spaces",
-                    },
-                  })}
-                  placeholder='first name'
-                />
+                <CustomInput register={register} type={"firstName"} />
                 <Text color={"red"}>{errors.firstName?.message}</Text>
               </Box>
 
@@ -124,30 +102,7 @@ const Form = () => {
                   Last Name
                 </Text>
                 <br />
-                <Input
-                  w={300}
-                  transition='all 0.2s'
-                  borderRadius={6}
-                  borderWidth='1px'
-                  _hover={{ bg: "gray.400" }}
-                  _expanded={{ bg: "blue.400" }}
-                  _focus={{ boxShadow: "outline" }}
-                  variant={"filled"}
-                  size='md'
-                  type='text'
-                  {...register("lastName", {
-                    required: "Last Name is required",
-                    minLength: {
-                      value: 2,
-                      message: "Last Name should at least be 2 characters",
-                    },
-                    pattern: {
-                      value: /^[a-zA-Z]+$/,
-                      message: "Last Name can't contain number and spaces",
-                    },
-                  })}
-                  placeholder='last name'
-                />
+                <CustomInput register={register} type={"lastName"} />
                 <Text color={"red"}>{errors.lastName?.message}</Text>
               </Box>
             </Flex>
@@ -203,31 +158,7 @@ const Form = () => {
                     Email
                   </Text>
                   <br />
-                  <Input
-                    w={300}
-                    transition='all 0.2s'
-                    borderRadius={6}
-                    borderWidth='1px'
-                    _hover={{ bg: "gray.400" }}
-                    _expanded={{ bg: "blue.400" }}
-                    _focus={{ boxShadow: "outline" }}
-                    variant={"filled"}
-                    size='md'
-                    type='text'
-                    {...register("email", {
-                      required: "Email is required",
-                      minLength: {
-                        value: 2,
-                        message: "Email should at least be 2 characters",
-                      },
-                      pattern: {
-                        value:
-                          /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
-                        message: "Invalid Email",
-                      },
-                    })}
-                    placeholder='email'
-                  />
+                  <CustomInput register={register} type={"email"} />
                   <Text color={"red"}>{errors.email?.message}</Text>
                 </Box>
 
@@ -311,7 +242,6 @@ const Form = () => {
           <Flex>
             <Box></Box>
             <Spacer />
-
             <Button
               position={"relative"}
               type='submit'
