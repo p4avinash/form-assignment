@@ -14,6 +14,7 @@ type FormValues = {
     name: string
   }[]
 }
+
 export default function UpdateState(
   state: GlobalState,
   payload: { data: FormValues }

@@ -5,79 +5,20 @@ import {
   InputRightElement,
   InputLeftAddon,
 } from "@chakra-ui/react"
-import { useForm, Controller, useFieldArray } from "react-hook-form"
+import { useForm, useFieldArray, FormProvider } from "react-hook-form"
 import { Flex, Spacer, Box, Spinner, Button } from "@chakra-ui/react"
 import { useState } from "react"
-import { CheckIcon, AddIcon, CloseIcon } from "@chakra-ui/icons"
-import { Select, components } from "chakra-react-select"
+import { AddIcon, CloseIcon } from "@chakra-ui/icons"
 import UpdateState from "./UpdateState"
 import { useStateMachine } from "little-state-machine"
-
-const { Option } = components
-
-// function to implement check icon in custom select
-function IconOption(props: any) {
-  const {
-    data: { label, Icon },
-  } = props
-
-  return (
-    <Option {...props}>
-      <Flex className='flex items-center gap-2'>
-        <span>{label}</span>
-        <Spacer />
-        {props.isSelected && <Icon color='green' />}
-      </Flex>
-    </Option>
-  )
-}
-const genderOptions = [
-  {
-    label: "Male",
-    value: "male",
-    Icon: CheckIcon,
-  },
-  {
-    label: "Female",
-    value: "female",
-    Icon: CheckIcon,
-  },
-  {
-    label: "Other",
-    value: "other",
-    Icon: CheckIcon,
-  },
-]
-
-type FormValues = {
-  firstName: string
-  lastName: string
-  gender: {
-    label: string
-    value: string
-    Icon: any
-  }
-  dob: string
-  email: string
-  phone: string
-  techstack: {
-    name: string
-  }[]
-}
-
-// overwriting bgcolor and text color for custom select
-const option = (provided: any, state: any) => ({
-  ...provided,
-
-  backgroundColor: state.isSelected && "white",
-  "&:hover": {
-    backgroundColor: state.isSelected && "white",
-  },
-  color: "black",
-})
+import { handleDateFormat } from "../utility/utility"
+import { FormValues } from "../types/type"
+import CustomSelect from "./CustomSelect"
+import { useRef } from "react"
 
 const Form = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const customSelectRef = useRef(null)
 
   const {
     control,
@@ -115,35 +56,6 @@ const Form = () => {
       actions.UpdateState({ data: data })
     }, 3000)
     return () => clearTimeout(timeout)
-  }
-
-  // function to handle date format
-  const handleDateFormat = (date: string) => {
-    const monthName = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ]
-
-    let monthIndex = new Date(date).getMonth()
-    let day = new Date(date).getDate()
-    let year = new Date(date).getFullYear()
-    let month = monthName[monthIndex]
-
-    let dayStr = day.toString().padStart(2, "0")
-
-    let formattedDate = `${dayStr}/${month}/${year}`
-    console.log(formattedDate, monthIndex)
-    return formattedDate
   }
 
   console.log(errors)
@@ -246,38 +158,12 @@ const Form = () => {
               Other Information
             </Text>
             <Flex gap={10}>
-              <Box className='gender' w={300}>
-                <Text as={"b"} fontSize={"lg"}>
-                  Gender
-                </Text>
-                <br />
-                <Controller
-                  name='gender'
-                  rules={{
-                    required: true,
-                    validate: {
-                      check: (value) =>
-                        value.label !== "" || "Please select a gender",
-                    },
-                  }}
-                  render={({ field }) => (
-                    <Select
-                      variant={"filled"}
-                      placeholder='Select Gender'
-                      styles={{ option }}
-                      hideSelectedOptions={false}
-                      closeMenuOnSelect={false}
-                      {...field}
-                      options={genderOptions}
-                      components={{
-                        Option: IconOption,
-                      }}
-                    />
-                  )}
-                  control={control}
-                />
-                <Text color={"red"}>{errors.gender?.message}</Text>
-              </Box>
+              {/* Custom Select Box */}
+              <CustomSelect
+                ref={customSelectRef}
+                control={control}
+                errors={errors}
+              />
 
               <Box className='date-of-birth'>
                 <Text as={"b"} fontSize={"lg"}>

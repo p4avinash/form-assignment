@@ -2,8 +2,10 @@ import { useStateMachine } from "little-state-machine"
 import UpdateState from "./UpdateState"
 import { Text } from "@chakra-ui/react"
 import { Flex, Box } from "@chakra-ui/react"
+import { useFormContext } from "react-hook-form"
 
 const Display = () => {
+  console.log()
   const { state } = useStateMachine({ UpdateState })
   console.log("state from display component", state)
   const { firstName, lastName, dob, email, phone, gender, techstack } =
