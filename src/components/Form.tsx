@@ -5,61 +5,49 @@ import {
   InputRightElement,
   InputLeftAddon,
 } from "@chakra-ui/react"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useFieldArray, useFormContext, FieldErrors } from "react-hook-form"
 import { Flex, Spacer, Box, Spinner, Button } from "@chakra-ui/react"
 import { useState } from "react"
 import { AddIcon, CloseIcon } from "@chakra-ui/icons"
-import UpdateState from "./UpdateState"
-import { useStateMachine } from "little-state-machine"
 import { handleDateFormat } from "../utility/utility"
-import { FormValues } from "../types/type"
 import CustomSelect from "./CustomSelect"
 import CustomInput from "./CustomInput"
-import { useRef } from "react"
 
 const Form = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const customSelectRef = useRef(null)
 
+  // const { actions, state } = useStateMachine({ UpdateState })
+
+  // function to handle loading state and dispatch form data to global state after timeout duration
   const {
-    control,
     register,
-    handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      gender: {
-        label: "",
-        value: "",
-        Icon: "",
-      },
-      dob: "",
-      email: "",
-      phone: "",
-      techstack: [{ name: "" }],
-    },
-  })
+    handleSubmit,
+  } = useFormContext()
+  const handleIsLoading = (data: any) => {
+    setIsLoading(true)
+    const timeout = setTimeout(() => {
+      setIsLoading(false)
+      // actions.UpdateState({ data: data })
+    }, 3000)
+    return () => clearTimeout(timeout)
+  }
 
   const { fields, append, remove } = useFieldArray({
     name: "techstack",
     control,
   })
 
-  const { actions, state } = useStateMachine({ UpdateState })
-
-  // function to handle loading state and dispatch form data to global state after timeout duration
-  const handleIsLoading = (data: any) => {
-    setIsLoading(true)
-    const timeout = setTimeout(() => {
-      setIsLoading(false)
-      actions.UpdateState({ data: data })
-    }, 3000)
-    return () => clearTimeout(timeout)
-  }
-
-  console.log(errors)
+  const techstackErrors = errors.techstack as
+    | FieldErrors<
+        Array<{
+          name: string
+          message: string
+        }>
+      >
+    | undefined
+  console.log(techstackErrors?.[0])
 
   return (
     <form
@@ -94,7 +82,7 @@ const Form = () => {
                 </Text>
                 <br />
                 <CustomInput register={register} type={"firstName"} />
-                <Text color={"red"}>{errors.firstName?.message}</Text>
+                <Text color={"red"}>{errors.firstName?.message as string}</Text>
               </Box>
 
               <Box className='lastName'>
@@ -103,7 +91,7 @@ const Form = () => {
                 </Text>
                 <br />
                 <CustomInput register={register} type={"lastName"} />
-                <Text color={"red"}>{errors.lastName?.message}</Text>
+                <Text color={"red"}>{errors.lastName?.message as string}</Text>
               </Box>
             </Flex>
           </Box>
@@ -113,12 +101,7 @@ const Form = () => {
               Other Information
             </Text>
             <Flex gap={10}>
-              {/* Custom Select Box */}
-              <CustomSelect
-                ref={customSelectRef}
-                control={control}
-                errors={errors}
-              />
+              <CustomSelect />
 
               <Box className='date-of-birth'>
                 <Text as={"b"} fontSize={"lg"}>
@@ -147,7 +130,7 @@ const Form = () => {
                     },
                   })}
                 />
-                <Text color={"red"}>{errors.dob?.message}</Text>
+                <Text color={"red"}>{errors.dob?.message as string}</Text>
               </Box>
             </Flex>
 
@@ -159,7 +142,7 @@ const Form = () => {
                   </Text>
                   <br />
                   <CustomInput register={register} type={"email"} />
-                  <Text color={"red"}>{errors.email?.message}</Text>
+                  <Text color={"red"}>{errors.email?.message as string}</Text>
                 </Box>
 
                 <Box>
@@ -170,6 +153,14 @@ const Form = () => {
                   <InputGroup>
                     <InputLeftAddon>+91</InputLeftAddon>
                     <Input
+                      transition='all 0.2s'
+                      borderRadius={6}
+                      borderWidth='1px'
+                      _hover={{ bg: "gray.400" }}
+                      _expanded={{ bg: "blue.400" }}
+                      _focus={{ boxShadow: "outline" }}
+                      variant={"filled"}
+                      size='md'
                       {...register("phone", {
                         required: "Phone is required",
                         maxLength: {
@@ -185,7 +176,7 @@ const Form = () => {
                       placeholder='phone number'
                     />
                   </InputGroup>
-                  <Text color={"red"}>{errors.phone?.message}</Text>
+                  <Text color={"red"}>{errors.phone?.message as string}</Text>
                 </Box>
               </Flex>
             </Box>
@@ -216,7 +207,7 @@ const Form = () => {
                           variant={"filled"}
                           key={field.id}
                           type='text'
-                          {...register(`techstack.${index}.name`, {
+                          {...register(`techstack.${index}.name` as const, {
                             required: "Tech Stack is required",
                           })}
                         />
@@ -231,7 +222,7 @@ const Form = () => {
                         )}
                       </InputGroup>
                       <Text color={"red"}>
-                        {errors.techstack?.[index]?.name?.message}
+                        {techstackErrors?.[index]?.name?.message}
                       </Text>
                     </Box>
                   )

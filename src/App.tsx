@@ -1,31 +1,30 @@
-import React from "react"
 import "./App.css"
 import Form from "./components/Form"
 import Display from "./components/Display"
-import { StateMachineProvider, createStore } from "little-state-machine"
-
-createStore({
-  data: {
-    firstName: "",
-    lastName: "",
-    gender: {
-      label: "",
-      value: "",
-      Icon: "",
-    },
-    dob: "",
-    email: "",
-    phone: "",
-    techstack: [{ name: "" }],
-  },
-})
+import { FormProvider, useForm } from "react-hook-form"
+import { FormValues } from "./types/type"
 
 function App() {
+  const methods = useForm<FormValues>({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      gender: {
+        label: "",
+        value: "",
+        Icon: "",
+      },
+      dob: "",
+      email: "",
+      phone: "",
+      techstack: [{ name: "" }],
+    },
+  })
   return (
-    <StateMachineProvider>
+    <FormProvider {...methods}>
       <Form />
       <Display />
-    </StateMachineProvider>
+    </FormProvider>
   )
 }
 
